@@ -7,9 +7,10 @@
 </head>
 <body>
     <div>
-        <a href="<?= route('home') ?>">Home</a>
-        <a href="<?= route('article.list') ?>">Articles</a>
+        <a href="{{ route('home') }}">Home</a>
+        <a href="{{ route('article.list') }}">Articles</a>
     </div>
-    Ini halaman home
+    <h1>Halo, {{ $nama }}</h1>
+    <p>{!! $tanggal !!}</p>
 </body>
 </html>
