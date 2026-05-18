@@ -50,4 +50,41 @@ class ArticleController extends Controller
             'article' => $article
         ]);
     }
+
+    function edit(string $id, Request $request)
+    {
+        $article = Article::where('id', $id)->firstOrFail();
+
+        if ($request->isMethod('post')) {
+            $article->slug = $request->slug;
+            $article->title = $request->title;
+            $article->content = $request->content;
+            $article->save();
+
+            if ($article) {
+                return redirect()->route('article.single', ['slug' => $article->slug])
+                    ->withSuccess('Artikel berhasil diubah');
+            }
+
+            return back()->withInput()
+                ->withErrors([ 'alert' => 'Gagal menyimpan artikel' ]);
+        }
+
+        return view('article.form', [
+            'article' => $article
+        ]);
+    }
+
+    function delete(string $id, Request $request)
+    {
+        $article = Article::where('id', $id)->firstOrFail();
+
+        if ($article->delete()) {
+            return redirect()->route('article.list')
+                ->withSuccess('Artikel telah dihapus');
+        }
+
+        return back()->withInput()
+            ->withErrors([ 'alert' => 'Gagal menghapus artikel' ]);
+    }
 }
