@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Article;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
     function list(Request $request)
     {
-        $articles = $request->session()->get('articles', []);
+        $articles = Article::get();
 
         return view('article.list', [
             'articles' => $articles
@@ -18,15 +20,34 @@ class ArticleController extends Controller
     function create(Request $request)
     {
         if ($request->isMethod('post')) {
-            $request->session()->push('articles', [
+            $article = Article::create([
+                'slug' => Str::slug($request->title),
                 'title' => $request->title,
                 'content' => $request->content,
-                'date' => date('Y-m-d H:i:s'),
             ]);
 
-            return redirect()->route('article.list');
+            if ($article) {
+                return redirect()->route('article.list')
+                    ->withSuccess('Artikel berhasil dibuat');
+            }
+
+            return back()->withInput()
+                ->withErrors([
+                    'alert' => 'Gagal menyimpan artikel'
+                ]);
         }
 
         return view('article.form');
+    }
+
+    function single(string $slug, Request $request)
+    {
+        $article = Article::where('slug', $slug)->first();
+
+        if (!$article) return abort(404);
+
+        return view('article.single', [
+            'article' => $article
+        ]);
     }
 }
