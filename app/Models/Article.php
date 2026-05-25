@@ -15,6 +15,10 @@ class Article extends Model
         'article_category_id'
     ];
 
+    protected $appends = [
+        'comments_count'
+    ];
+
     function comments(): HasMany
     {
         return $this->hasMany(ArticleComment::class);
@@ -29,5 +33,10 @@ class Article extends Model
     {
         // wajib mengisi foreign key karena nama methodnya beda dengan nama field di database
         return $this->belongsTo(ArticleCategory::class, 'article_category_id');
+    }
+
+    function getCommentsCountAttribute(): int
+    {
+        return $this->comments->count();
     }
 }

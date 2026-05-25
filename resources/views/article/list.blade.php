@@ -16,6 +16,14 @@
                     <div class="badge text-bg-light">
                         {{ $article->category->name }}
                     </div>
+                    <div class="mt-3">
+                        {{-- @if($article->comments->count() > 0) --}}
+                        @if($article->comments_count > 0)
+                            <div class="mb-2 text-muted">Komentar terakhir</div>
+                            <x-article-comment :comment="$article->comments->last()"></x-article-comment>
+                        @endif
+                        <a href="{{ route('article.single', ['slug' => $article->slug]) }}#comment">Lihat {{ $article->comments_count }} komentar</a>
+                    </div>
                 </div>
             </div>
         @endforeach
