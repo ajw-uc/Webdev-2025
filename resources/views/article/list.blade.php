@@ -13,6 +13,9 @@
                     <p class="card-text">
                         {{ $article->content }}
                     </p>
+                    <div class="badge text-bg-light">
+                        {{ $article->category->name }}
+                    </div>
                 </div>
             </div>
         @endforeach

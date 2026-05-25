@@ -11,6 +11,9 @@
                 Kembali
             </a>
         </div>
+        <div class="badge text-bg-light mb-3">
+            {{ $article->category->name }}
+        </div>
         <h1>
             {{ $article->title }}
         </h1>

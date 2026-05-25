@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\ArticleComment;
 use Illuminate\Support\Str;
 
@@ -11,7 +12,7 @@ class ArticleController extends Controller
 {
     function list(Request $request)
     {
-        $articles = Article::get();
+        $articles = Article::with('category')->get();
 
         return view('article.list', [
             'articles' => $articles
@@ -25,6 +26,7 @@ class ArticleController extends Controller
                 'slug' => Str::slug($request->title),
                 'title' => $request->title,
                 'content' => $request->content,
+                'article_category_id' => $request->article_category_id
             ]);
 
             if ($article) {
@@ -38,7 +40,9 @@ class ArticleController extends Controller
                 ]);
         }
 
-        return view('article.form');
+        return view('article.form', [
+            'article_categories' => ArticleCategory::orderBy('name')->get()
+        ]);
     }
 
     function single(string $slug, Request $request)
@@ -58,6 +62,7 @@ class ArticleController extends Controller
             $article->slug = $request->slug;
             $article->title = $request->title;
             $article->content = $request->content;
+            $article->article_category_id = $request->article_category_id;
             $article->save();
 
             if ($article) {
@@ -70,7 +75,8 @@ class ArticleController extends Controller
         }
 
         return view('article.form', [
-            'article' => $article
+            'article' => $article,
+            'article_categories' => ArticleCategory::orderBy('name')->get()
         ]);
     }
 
@@ -93,7 +99,7 @@ class ArticleController extends Controller
 
         $comment = ArticleComment::create([
             'article_id' => $article->id,
-            'content' => $request->comment
+            'content' => $request->comment,
         ]);
 
         if ($comment) {

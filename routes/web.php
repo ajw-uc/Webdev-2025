@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ArticleCategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,4 +22,13 @@ Route::controller(ArticleController::class)->group(function()
     Route::match(['get', 'post'], '/articles/{id}/edit', 'edit')->name('article.edit');
     Route::post('/articles/{id}/delete', 'delete')->name('article.delete');
     Route::post('/articles/{id}/comment', 'comment')->name('article.comment');
+});
+
+Route::controller(ArticleCategoryController::class)->group(function()
+{
+    Route::get('/article-categories', 'list')->name('article_category.list');
+    Route::match(['get', 'post'], '/article-categories/create', 'create')->name('article_category.create');
+    Route::get('/article-categories/{id}', 'single')->name('article_category.single');
+    Route::match(['get', 'post'], '/article-categories/{id}/edit', 'edit')->name('article_category.edit');
+    Route::post('/article-categories/{id}/delete', 'delete')->name('article_category.delete');
 });
