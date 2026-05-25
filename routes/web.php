@@ -20,4 +20,5 @@ Route::controller(ArticleController::class)->group(function()
     Route::get('/articles/{slug}', 'single')->name('article.single');
     Route::match(['get', 'post'], '/articles/{id}/edit', 'edit')->name('article.edit');
     Route::post('/articles/{id}/delete', 'delete')->name('article.delete');
+    Route::post('/articles/{id}/comment', 'comment')->name('article.comment');
 });

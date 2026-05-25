@@ -3,8 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ArticleComment extends Model
 {
-    //
+    protected $fillable = [
+        'article_id',
+        'content'
+    ];
+
+    function article(): BelongsTo
+    {
+        return $this->belongsTo(Article::class, 'article_id');
+    }
 }

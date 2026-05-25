@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\ArticleComment;
 use Illuminate\Support\Str;
 
 class ArticleController extends Controller
@@ -42,9 +43,7 @@ class ArticleController extends Controller
 
     function single(string $slug, Request $request)
     {
-        $article = Article::where('slug', $slug)->first();
-
-        if (!$article) return abort(404);
+        $article = Article::where('slug', $slug)->firstOrFail();
 
         return view('article.single', [
             'article' => $article
@@ -86,5 +85,23 @@ class ArticleController extends Controller
 
         return back()->withInput()
             ->withErrors([ 'alert' => 'Gagal menghapus artikel' ]);
+    }
+
+    function comment(string $id, Request $request)
+    {
+        $article = Article::where('id', $id)->firstOrFail();
+
+        $comment = ArticleComment::create([
+            'article_id' => $article->id,
+            'content' => $request->comment
+        ]);
+
+        if ($comment) {
+            return redirect()->route('article.single', ['slug' => $article->slug])
+                ->withSuccess('Komentar berhasil ditambahkan');
+        }
+
+        return back()->withInput()
+            ->withErrors([ 'message' => 'Gagal menambahkan komentar' ]);
     }
 }

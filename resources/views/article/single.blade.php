@@ -20,6 +20,31 @@
         <p>
             {{ $article->content }}
         </p>
+
+        <div class="accordion mt-5" id="accordionComment">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Komentar
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionComment">
+                    <div class="accordion-body">
+                        @foreach ($article->comments->sortByDesc('created_at') as $comment)
+                            <x-article-comment :comment="$comment"></x-article-comment>
+                        @endforeach
+
+                        <form method="post" action="{{ route('article.comment', ['id' => $article->id]) }}">
+                            @csrf
+                            <x-form.group for="comment" label="Tinggalkan komentar Anda">
+                                <textarea class="form-control" name="comment" id="comment"></textarea>
+                            </x-form.group>
+                            <button type="submit" class="btn btn-primary">Kirim</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Delete Modal -->
