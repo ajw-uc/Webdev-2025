@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\ArticleComment;
+use App\Models\User;
+use App\Enums\UserRoleEnum;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\Gate;
 class ArticleController extends Controller
 {
     function list(Request $request)
@@ -96,12 +98,21 @@ class ArticleController extends Controller
 
         return view('article.form', [
             'article' => $article,
-            'article_categories' => ArticleCategory::orderBy('name')->get()
+            'article_categories' => ArticleCategory::orderBy('name')->get(),
+            'allow_edit_slug' => Gate::allow('isAdmin')
         ]);
     }
 
     function delete(string $id, Request $request)
     {
+        Gate::authorize('isAdmin');
+
+        // cek akses user author lain
+        // $user = User::where('role', UserRoleEnum::Author->value)->first();
+        // if (Gate::forUser($user)->allows('isAdmin')) {
+        //     return abort(403, 'Hanya admin yang bisa mengubah artikel');
+        // }
+
         $article = Article::where('id', $id)->firstOrFail();
 
         if ($article->delete()) {

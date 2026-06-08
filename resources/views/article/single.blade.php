@@ -4,9 +4,11 @@
             <a href="{{ route('article.edit', ['id' => $article->id]) }}" class="btn btn-info">
                 Ubah
             </a>
+            @canany(['isAdmin'])
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                 Hapus
             </button>
+            @endcanany
             <a href="{{ route('article.list') }}" class="btn btn-secondary">
                 Kembali
             </a>

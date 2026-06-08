@@ -26,7 +26,7 @@ Route::controller(ArticleController::class)->middleware(['auth', EnsureArticleCa
     Route::match(['get', 'post'], '/articles/create', 'create')->name('article.create');
     Route::get('/articles/{slug}', 'single')->name('article.single');
     Route::match(['get', 'post'], '/articles/{id}/edit', 'edit')->name('article.edit');
-    Route::post('/articles/{id}/delete', 'delete')->name('article.delete');
+    Route::post('/articles/{id}/delete', 'delete')->name('article.delete')->middleware('can:isAdmin');
     Route::post('/articles/{id}/comment', 'comment')->name('article.comment');
 });
 

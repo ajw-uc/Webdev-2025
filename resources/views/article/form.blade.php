@@ -4,7 +4,7 @@
             @csrf
             @isset($article)
                 <x-form.group for="slug" label="{{ __('article.slug') }}">
-                    <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug') ?? $article->slug ?? '' }}" required>
+                    <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug') ?? $article->slug ?? '' }}" required @readonly(!$allow_edit_slug)>
                 </x-form.group>
             @endisset
             <x-form.group for="title" label="{{ __('article.title') }}">
