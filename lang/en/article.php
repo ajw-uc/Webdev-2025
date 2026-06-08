@@ -7,5 +7,6 @@ return [
     'title' => 'Title',
     'content' => 'Content',
     'category' => 'Category',
-    'slug' => 'Slug'
+    'slug' => 'Slug',
+    'success' => 'Article :name has been created successfully'
 ];

@@ -43,7 +43,7 @@ class ArticleController extends Controller
 
             if ($article) {
                 return redirect()->route('article.list')
-                    ->withSuccess('Artikel berhasil dibuat');
+                    ->withSuccess(__('article.success', ['name' => $article->title]));
             }
 
             return back()->withInput()
@@ -87,7 +87,7 @@ class ArticleController extends Controller
 
             if ($article) {
                 return redirect()->route('article.single', ['slug' => $article->slug])
-                    ->withSuccess('Artikel berhasil diubah');
+                    ->withSuccess(__('article.success', ['name' => $article->title]));
             }
 
             return back()->withInput()

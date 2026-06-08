@@ -11,5 +11,6 @@ return [
     'title' => 'Judul',
     'content' => 'Isi',
     'category' => 'Kategori',
-    'slug' => 'Slug'
+    'slug' => 'Slug',
+    'success' => 'Artikel :name berhasil dibuat'
 ];
