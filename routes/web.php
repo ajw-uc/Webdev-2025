@@ -5,7 +5,11 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
+use App\Http\Middleware\EnsureArticleCategoryExists;
+use App\Http\Middleware\EnsureUserRole;
+use App\Enums\UserRoleEnum;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,7 +20,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/articles/create', [ArticleController::class, 'create']);
 // Route::post('/articles/create', [ArticleController::class, 'create']);
 
-Route::controller(ArticleController::class)->middleware('auth')->group(function()
+Route::controller(ArticleController::class)->middleware(['auth', EnsureArticleCategoryExists::class])->group(function()
 {
     Route::get('/articles', 'list')->name('article.list');
     Route::match(['get', 'post'], '/articles/create', 'create')->name('article.create');
@@ -29,10 +33,16 @@ Route::controller(ArticleController::class)->middleware('auth')->group(function(
 Route::controller(ArticleCategoryController::class)->middleware('auth')->group(function()
 {
     Route::get('/article-categories', 'list')->name('article_category.list');
-    Route::match(['get', 'post'], '/article-categories/create', 'create')->name('article_category.create');
+    Route::match(['get', 'post'], '/article-categories/create', 'create')->name('article_category.create')
+        ->middleware(EnsureUserRole::class.':'.UserRoleEnum::Administrator->value);
+        // ->middleware('role:'.UserRoleEnum::Administrator->value); // penggunaan middleware alias
     Route::get('/article-categories/{id}', 'single')->name('article_category.single');
-    Route::match(['get', 'post'], '/article-categories/{id}/edit', 'edit')->name('article_category.edit');
-    Route::post('/article-categories/{id}/delete', 'delete')->name('article_category.delete');
+    Route::match(['get', 'post'], '/article-categories/{id}/edit', 'edit')->name('article_category.edit')
+        ->middleware(EnsureUserRole::class.':'.UserRoleEnum::Administrator->value);
+        // ->middleware('role:'.UserRoleEnum::Administrator->value); // penggunaan middleware alias
+    Route::post('/article-categories/{id}/delete', 'delete')->name('article_category.delete')
+        ->middleware(EnsureUserRole::class.':'.UserRoleEnum::Administrator->value);
+        // ->middleware('role:'.UserRoleEnum::Administrator->value); // penggunaan middleware alias
 });
 
 Route::controller(UserController::class)->middleware('auth')->group(function() {

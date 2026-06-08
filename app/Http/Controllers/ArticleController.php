@@ -22,7 +22,7 @@ class ArticleController extends Controller
 
     function create(Request $request)
     {
-        $articleCategories = ArticleCategory::orderBy('name')->get();
+        $articleCategories = $request->articleCategories;
 
         if ($request->isMethod('post')) {
             $request->validate([
@@ -69,7 +69,7 @@ class ArticleController extends Controller
     function edit(string $id, Request $request)
     {
         $article = Article::where('id', $id)->firstOrFail();
-        $articleCategories = ArticleCategory::orderBy('name')->get();
+        $articleCategories = $request->articleCategories;
 
         if ($request->isMethod('post')) {
             $request->validate([
