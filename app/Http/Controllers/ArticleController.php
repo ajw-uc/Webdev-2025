@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\ArticleComment;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ArticleController extends Controller
 {
@@ -21,9 +22,20 @@ class ArticleController extends Controller
 
     function create(Request $request)
     {
+        $articleCategories = ArticleCategory::orderBy('name')->get();
+
         if ($request->isMethod('post')) {
+            $request->validate([
+                'title' => ['required', 'string', 'max:255', Rule::unique('articles')],
+                'content' => ['required', 'string', 'max:2000'],
+                'article_category_id' => ['required', 'integer', Rule::in($articleCategories->pluck('id'))]
+            ]);
+
+            $slug = Str::slug($request->title);
+            if (Article::where('slug', $slug)->exists()) $slug .= '-'.uniqid();
+
             $article = Article::create([
-                'slug' => Str::slug($request->title),
+                'slug' => $slug,
                 'title' => $request->title,
                 'content' => $request->content,
                 'article_category_id' => $request->article_category_id
@@ -57,8 +69,16 @@ class ArticleController extends Controller
     function edit(string $id, Request $request)
     {
         $article = Article::where('id', $id)->firstOrFail();
+        $articleCategories = ArticleCategory::orderBy('name')->get();
 
         if ($request->isMethod('post')) {
+            $request->validate([
+                'slug' => ['required', 'string', Rule::unique('articles')->ignore($article->id)],
+                'title' => ['required', 'string', 'max:255', Rule::unique('articles')->ignore($article->id)],
+                'content' => ['required', 'string', 'max:2000'],
+                'article_category_id' => ['required', 'integer', Rule::in($articleCategories->pluck('id'))]
+            ]);
+
             $article->slug = $request->slug;
             $article->title = $request->title;
             $article->content = $request->content;
@@ -96,6 +116,10 @@ class ArticleController extends Controller
     function comment(string $id, Request $request)
     {
         $article = Article::where('id', $id)->firstOrFail();
+
+        $request->validate([
+            'comment' => ['required', 'string', 'max:2000'],
+        ]);
 
         $comment = ArticleComment::create([
             'article_id' => $article->id,
