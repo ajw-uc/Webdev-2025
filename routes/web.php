@@ -3,6 +3,8 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleCategoryController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,7 +16,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/articles/create', [ArticleController::class, 'create']);
 // Route::post('/articles/create', [ArticleController::class, 'create']);
 
-Route::controller(ArticleController::class)->group(function()
+Route::controller(ArticleController::class)->middleware('auth')->group(function()
 {
     Route::get('/articles', 'list')->name('article.list');
     Route::match(['get', 'post'], '/articles/create', 'create')->name('article.create');
@@ -24,11 +26,23 @@ Route::controller(ArticleController::class)->group(function()
     Route::post('/articles/{id}/comment', 'comment')->name('article.comment');
 });
 
-Route::controller(ArticleCategoryController::class)->group(function()
+Route::controller(ArticleCategoryController::class)->middleware('auth')->group(function()
 {
     Route::get('/article-categories', 'list')->name('article_category.list');
     Route::match(['get', 'post'], '/article-categories/create', 'create')->name('article_category.create');
     Route::get('/article-categories/{id}', 'single')->name('article_category.single');
     Route::match(['get', 'post'], '/article-categories/{id}/edit', 'edit')->name('article_category.edit');
     Route::post('/article-categories/{id}/delete', 'delete')->name('article_category.delete');
+});
+
+Route::controller(UserController::class)->middleware('auth')->group(function() {
+    Route::get('/users', 'list')->name('user.list');
+    Route::match(['get', 'post'], '/users/create', 'create')->name('user.create');
+    Route::match(['get', 'post'], '/users/{id}/edit', 'edit')->name('user.edit');
+    Route::post('/users/{id}/delete', 'delete')->name('user.delete');
+});
+
+Route::controller(LoginController::class)->group(function() {
+    Route::match(['get', 'post'], '/login', 'form')->middleware('guest')->name('login');
+    Route::post('/logout', 'logout')->middleware('auth')->name('logout');
 });

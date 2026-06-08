@@ -21,7 +21,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ route('home') }}">Beranda</a>
                     </li>
@@ -31,7 +31,30 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('article_category.list') }}">Kategori</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('user.list') }}">User</a>
+                    </li>
                 </ul>
+
+                <div class="d-flex">
+                    @auth
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ auth()->user()->name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-lg-end">
+                                <li>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">Keluar</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary">Masuk</a>
+                    @endauth
+                </div>
             </div>
         </div>
     </nav>
