@@ -11,11 +11,17 @@ class ArticleComment extends Model
     use HasFactory;
     protected $fillable = [
         'article_id',
-        'content'
+        'content',
+        'user_id'
     ];
 
-    function article(): BelongsTo
+    public function article(): BelongsTo
     {
         return $this->belongsTo(Article::class, 'article_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

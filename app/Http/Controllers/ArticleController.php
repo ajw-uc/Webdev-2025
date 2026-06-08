@@ -40,7 +40,8 @@ class ArticleController extends Controller
                 'slug' => $slug,
                 'title' => $request->title,
                 'content' => $request->content,
-                'article_category_id' => $request->article_category_id
+                'article_category_id' => $request->article_category_id,
+                'user_id' => $request->user()->id
             ]);
 
             if ($article) {
@@ -71,6 +72,9 @@ class ArticleController extends Controller
     function edit(string $id, Request $request)
     {
         $article = Article::where('id', $id)->firstOrFail();
+
+        Gate::authorize('update', $article);
+
         $articleCategories = $request->articleCategories;
 
         if ($request->isMethod('post')) {
@@ -99,7 +103,7 @@ class ArticleController extends Controller
         return view('article.form', [
             'article' => $article,
             'article_categories' => ArticleCategory::orderBy('name')->get(),
-            'allow_edit_slug' => Gate::allow('isAdmin')
+            'allow_edit_slug' => Gate::allows('isAdmin')
         ]);
     }
 
@@ -135,6 +139,7 @@ class ArticleController extends Controller
         $comment = ArticleComment::create([
             'article_id' => $article->id,
             'content' => $request->comment,
+            'user_id' => $request->user()->id
         ]);
 
         if ($comment) {
