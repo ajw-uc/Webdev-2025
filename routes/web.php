@@ -56,3 +56,8 @@ Route::controller(LoginController::class)->group(function() {
     Route::match(['get', 'post'], '/login', 'form')->middleware('guest')->name('login');
     Route::post('/logout', 'logout')->middleware('auth')->name('logout');
 });
+
+Route::controller(\App\Http\Controllers\NotificationController::class)->middleware('auth')->group(function() {
+    Route::get('/notification', 'list')->name('notification.list');
+    Route::get('/notification/{id}/read', 'read')->name('notification.read');
+});

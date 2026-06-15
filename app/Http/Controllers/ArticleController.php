@@ -8,6 +8,7 @@ use App\Models\ArticleCategory;
 use App\Models\ArticleComment;
 use App\Models\User;
 use App\Enums\UserRoleEnum;
+use App\Notifications\ArticleCommented;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
@@ -192,6 +193,9 @@ class ArticleController extends Controller
         ]);
 
         if ($comment) {
+            // mengirimkan notifikasi ke user yang menulis artikel
+            $article->user->notify(new ArticleCommented($comment));
+
             return redirect()->route('article.single', ['slug' => $article->slug])
                 ->withSuccess('Komentar berhasil ditambahkan');
         }

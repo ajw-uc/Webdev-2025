@@ -44,4 +44,9 @@ class Article extends Model
     {
         return $this->comments->count();
     }
+
+    function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite([])
@@ -38,6 +40,29 @@
 
                 <div class="d-flex">
                     @auth
+                        <div class="dropdown">
+                            <button class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if(auth()->user()->unreadNotifications->isNotEmpty())
+                                    <i class="bi bi-bell-fill"></i>
+                                    <span class="badge text-bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                                @else
+                                    <i class="bi bi-bell"></i>
+                                @endif
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-lg-end">
+                                @if(auth()->user()->unreadNotifications->isNotEmpty())
+                                    @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('notification.read', ['id' => $notification->id]) }}">{{ $notification->data['text'] }}</a>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li><p class="dropdown-item disabled">{{ __('notification.no_unread') }}</p></li>
+                                @endif
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('notification.list') }}">{{ __('notification.view_all') }}</a></li>
+                            </ul>
+                        </div>
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ auth()->user()->name }}
