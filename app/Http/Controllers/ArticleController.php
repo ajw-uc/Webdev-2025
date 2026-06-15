@@ -11,11 +11,21 @@ use App\Enums\UserRoleEnum;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\File;
+
 class ArticleController extends Controller
 {
     function list(Request $request)
     {
-        $articles = Article::with('category')->get();
+        // $articles = Article::with('category')->paginate(20);
+        // $articles = Article::with('category')->simplePaginate(20);
+
+        $articles = Article::where(function($query) use ($request) {
+            $query->where('title', 'like', '%'.$request->search.'%')
+                ->orWhere('content', 'like', '%'.$request->search.'%');
+        })->with('category')->paginate(20)->withQueryString();
+
 
         return view('article.list', [
             'articles' => $articles
@@ -41,10 +51,19 @@ class ArticleController extends Controller
                 'title' => $request->title,
                 'content' => $request->content,
                 'article_category_id' => $request->article_category_id,
-                'user_id' => $request->user()->id
+                'user_id' => $request->user()->id,
+                'image' => [File::image()->max('10mb')]
             ]);
 
             if ($article) {
+                if ($request->file('image')) {
+                    $image = $request->file('image');
+                    // store ke public disk, supaya bisa diakses melalui web browser
+                    $path = $image->storeAs('articles', $article->id. '.' . $image->getClientOriginalExtension(), 'public');
+                    $article->image = $path;
+                    $article->save();
+                }
+
                 return redirect()->route('article.list')
                     ->withSuccess(__('article.success', ['name' => $article->title]));
             }
@@ -82,7 +101,8 @@ class ArticleController extends Controller
                 'slug' => ['required', 'string', Rule::unique('articles')->ignore($article->id)],
                 'title' => ['required', 'string', 'max:255', Rule::unique('articles')->ignore($article->id)],
                 'content' => ['required', 'string', 'max:2000'],
-                'article_category_id' => ['required', 'integer', Rule::in($articleCategories->pluck('id'))]
+                'article_category_id' => ['required', 'integer', Rule::in($articleCategories->pluck('id'))],
+                'image' => [File::image()->max('10mb')]
             ]);
 
             $article->slug = $request->slug;
@@ -92,6 +112,21 @@ class ArticleController extends Controller
             $article->save();
 
             if ($article) {
+                // hapus image lama
+                if ($article->image) {
+                    // hapus image dari public disk storage
+                    Storage::disk('public')->delete($article->image);
+                }
+
+                // upload image baru
+                if ($request->file('image')) {
+                    $filename = $article->id . '.' . $request->file('image')->getClientOriginalExtension();
+                    // store ke public disk, supaya bisa diakses melalui web browser
+                    $path = $request->file('image')->storeAs('articles', $filename, 'public');
+                    $article->image = $path;
+                    $article->save();
+                }
+
                 return redirect()->route('article.single', ['slug' => $article->slug])
                     ->withSuccess(__('article.success', ['name' => $article->title]));
             }
@@ -119,7 +154,13 @@ class ArticleController extends Controller
 
         $article = Article::where('id', $id)->firstOrFail();
 
+        $image = $article->image;
+
         if ($article->delete()) {
+            if ($image) {
+                // hapus image dari public disk storage
+                Storage::disk('public')->delete($image);
+            }
             return redirect()->route('article.list')
                 ->withSuccess('Artikel telah dihapus');
         }

@@ -22,6 +22,7 @@ class ArticleFactory extends Factory
             'title' => $this->faker->sentence(3),
             'content' => $this->faker->paragraph(5),
             'slug' => $this->faker->slug(),
+            'user_id' => \App\Models\User::whereIn('role', ['admin', 'author'])->inRandomOrder()->first()->id,
             'article_category_id' => \App\Models\ArticleCategory::inRandomOrder()->first()->id
         ];
     }

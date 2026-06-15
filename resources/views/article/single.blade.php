@@ -22,6 +22,9 @@
         <h5 class="mb-2 text-body-secondary">
             {{ $article->updated_at }}
         </h5>
+        @if($article->image)
+            <img src="{{ asset('storage/'.$article->image) }}">
+        @endif
         <p>
             {{ $article->content }}
         </p>

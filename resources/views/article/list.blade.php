@@ -1,5 +1,11 @@
 <x-template title="Artikel">
     <div class="container">
+        <form class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" id="search" class="form-control" value="{{ request()->query('search') }}" placeholder="Cari artikel">
+                <button type="submit" class="btn btn-primary">Terapkan</button>
+            </div>
+        </form>
         @if (count($articles) < 10)
             <a class="btn btn-success" href="{{ route('article.create') }}">Tambah Artikel</a>
         @endif
@@ -27,5 +33,9 @@
                 </div>
             </div>
         @endforeach
+
+        <div class="mt-3">
+            {{ $articles->links() }}
+        </div>
     </div>
 </x-template>

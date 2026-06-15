@@ -16,7 +16,8 @@ class Article extends Model
         'title',
         'content',
         'article_category_id',
-        'user_id'
+        'user_id',
+        'image'
     ];
 
     protected $appends = [

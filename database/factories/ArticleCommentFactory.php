@@ -19,6 +19,7 @@ class ArticleCommentFactory extends Factory
     {
         return [
             'article_id' => Article::factory(),
+            'user_id' => \App\Models\User::inRandomOrder()->first()->id,
             'content' => fake()->paragraph()
         ];
     }

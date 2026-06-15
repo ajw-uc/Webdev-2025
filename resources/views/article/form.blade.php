@@ -1,6 +1,6 @@
 <x-template title="Buat Artikel">
     <div class="container">
-        <form method="post" class="was-validated">
+        <form method="post" class="was-validated" enctype="multipart/form-data">
             @csrf
             @isset($article)
                 <x-form.group for="slug" label="{{ __('article.slug') }}">
@@ -21,6 +21,9 @@
                         </option>
                     @endforeach
                 </select>
+            </x-form.group>
+            <x-form.group for="image" label="Gambar">
+                <input type="file" name="image" accept="image/*" id="image" class="form-control">
             </x-form.group>
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Simpan</button>

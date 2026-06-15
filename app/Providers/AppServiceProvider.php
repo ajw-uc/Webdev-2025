@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserRoleEnum;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('isAuthor', function ($user) {
             return $user->role->value === UserRoleEnum::Author->value;
         });
+
+        Paginator::useBootstrapFive();
     }
 }
