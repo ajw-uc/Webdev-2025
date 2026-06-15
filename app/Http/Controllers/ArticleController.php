@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\File;
 
 class ArticleController extends Controller
@@ -64,6 +65,9 @@ class ArticleController extends Controller
                     $article->save();
                 }
 
+                $users = User::inRandomOrder()->get();
+                Mail::to($users)->send(new \App\Mail\ArticlePosted($article));
+
                 return redirect()->route('article.list')
                     ->withSuccess(__('article.success', ['name' => $article->title]));
             }
@@ -82,6 +86,10 @@ class ArticleController extends Controller
     function single(string $slug, Request $request)
     {
         $article = Article::where('slug', $slug)->firstOrFail();
+
+        if ($request->has('mailable')) {
+            return new \App\Mail\ArticlePosted($article);
+        }
 
         return view('article.single', [
             'article' => $article
