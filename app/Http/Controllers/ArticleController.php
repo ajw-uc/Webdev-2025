@@ -40,7 +40,8 @@ class ArticleController extends Controller
             $request->validate([
                 'title' => ['required', 'string', 'max:255', Rule::unique('articles')],
                 'content' => ['required', 'string', 'max:2000'],
-                'article_category_id' => ['required', 'integer', Rule::in($articleCategories->pluck('id'))]
+                'article_category_id' => ['required', 'integer', Rule::in($articleCategories->pluck('id'))],
+                'image' => [File::image()->max('10mb')]
             ]);
 
             $slug = Str::slug($request->title);
@@ -51,8 +52,7 @@ class ArticleController extends Controller
                 'title' => $request->title,
                 'content' => $request->content,
                 'article_category_id' => $request->article_category_id,
-                'user_id' => $request->user()->id,
-                'image' => [File::image()->max('10mb')]
+                'user_id' => $request->user()->id
             ]);
 
             if ($article) {
