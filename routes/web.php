@@ -9,6 +9,7 @@ use App\Http\Middleware\EnsureArticleCategoryExists;
 use App\Http\Middleware\EnsureUserRole;
 use App\Enums\UserRoleEnum;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SitemapController;
 
 
 Route::get('/', function () {
@@ -23,6 +24,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::controller(ArticleController::class)->middleware(['auth', EnsureArticleCategoryExists::class])->group(function()
 {
     Route::get('/articles', 'list')->name('article.list');
+    Route::get('/articles/cache', 'cache');
     Route::match(['get', 'post'], '/articles/create', 'create')->name('article.create');
     Route::get('/articles/{slug}', 'single')->name('article.single');
     Route::match(['get', 'post'], '/articles/{id}/edit', 'edit')->name('article.edit');
@@ -61,3 +63,5 @@ Route::controller(\App\Http\Controllers\NotificationController::class)->middlewa
     Route::get('/notification', 'list')->name('notification.list');
     Route::get('/notification/{id}/read', 'read')->name('notification.read');
 });
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);

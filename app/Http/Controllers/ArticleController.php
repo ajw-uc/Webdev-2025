@@ -9,6 +9,8 @@ use App\Models\ArticleComment;
 use App\Models\User;
 use App\Enums\UserRoleEnum;
 use App\Notifications\ArticleCommented;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
@@ -22,12 +24,19 @@ class ArticleController extends Controller
     {
         // $articles = Article::with('category')->paginate(20);
         // $articles = Article::with('category')->simplePaginate(20);
+        // $articles = Article::where(function($query) use ($request) {
+        //     $query->where('title', 'like', '%'.$request->search.'%')
+        //         ->orWhere('content', 'like', '%'.$request->search.'%');
+        // })->paginate(20)->withQueryString();
 
-        $articles = Article::where(function($query) use ($request) {
-            $query->where('title', 'like', '%'.$request->search.'%')
-                ->orWhere('content', 'like', '%'.$request->search.'%');
-        })->with('category')->paginate(20)->withQueryString();
+        $cacheKey = 'search-articles-'.$request->search.'-page-'.$request->page;
 
+        $articles = Cache::remember($cacheKey, 10, function() use ($request) {
+            return Article::where(function($query) use ($request) {
+                $query->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhere('content', 'like', '%'.$request->search.'%');
+            })->paginate(20)->withQueryString();
+        });
 
         return view('article.list', [
             'articles' => $articles
@@ -203,4 +212,5 @@ class ArticleController extends Controller
         return back()->withInput()
             ->withErrors([ 'message' => 'Gagal menambahkan komentar' ]);
     }
+
 }
