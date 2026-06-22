@@ -24,19 +24,20 @@ class ArticleController extends Controller
     {
         // $articles = Article::with('category')->paginate(20);
         // $articles = Article::with('category')->simplePaginate(20);
-        // $articles = Article::where(function($query) use ($request) {
-        //     $query->where('title', 'like', '%'.$request->search.'%')
-        //         ->orWhere('content', 'like', '%'.$request->search.'%');
-        // })->paginate(20)->withQueryString();
 
-        $cacheKey = 'search-articles-'.$request->search.'-page-'.$request->page;
+        $articles = Article::where(function($query) use ($request) {
+            $query->where('title', 'like', '%'.$request->search.'%')
+                ->orWhere('content', 'like', '%'.$request->search.'%');
+        })->paginate(20)->withQueryString();
 
-        $articles = Cache::remember($cacheKey, 10, function() use ($request) {
-            return Article::where(function($query) use ($request) {
-                $query->where('title', 'like', '%'.$request->search.'%')
-                    ->orWhere('content', 'like', '%'.$request->search.'%');
-            })->paginate(20)->withQueryString();
-        });
+        // $cacheKey = 'search-articles-'.$request->search.'-page-'.($request->page ?? 1);
+
+        // $articles = Cache::remember($cacheKey, 10, function() use ($request) {
+        //     return Article::where(function($query) use ($request) {
+        //         $query->where('title', 'like', '%'.$request->search.'%')
+        //             ->orWhere('content', 'like', '%'.$request->search.'%');
+        //     })->paginate(20)->withQueryString();
+        // });
 
         return view('article.list', [
             'articles' => $articles
